@@ -1,0 +1,49 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "坐标点 1",
+        "description": "纬度: 36.34114, 经度: 115.14025"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [115.14025, 36.34114]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "坐标点 2",
+        "description": "纬度: 36.34036, 经度: 115.40517"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [115.40517, 36.34036]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "坐标点 3",
+        "description": "纬度: 36.34566, 经度: 115.40277"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [115.40277, 36.34566]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "坐标点 4",
+        "description": "纬度: 36.34792, 经度: 115.40950"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [115.40950, 36.34792]
+      }
+    }
+  ]
+}
