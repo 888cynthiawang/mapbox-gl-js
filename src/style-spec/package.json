@@ -1,57 +1,123 @@
-{
-  "name": "@mapbox/mapbox-gl-style-spec",
-  "version": "14.12.0",
-  "description": "a specification for mapbox gl styles",
-  "author": "Mapbox",
-  "license": "SEE LICENSE IN LICENSE.txt",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:mapbox/mapbox-gl-js.git"
-  },
-  "keywords": [
-    "mapbox",
-    "mapbox-gl",
-    "mapbox-gl-js"
-  ],
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.es.js",
-  "types": "./dist/index.d.ts",
-  "type": "module",
-  "sideEffects": false,
-  "exports": {
-    ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.es.js"
-    },
-    "./": {
-      "import": "./"
-    }
-  },
-  "scripts": {
-    "pretest": "npm run build",
-    "test": "node ./test.js",
-    "build": "npm run build-spec && npm run build-dts",
-    "build-dts": "dts-bundle-generator --no-banner --export-referenced-types=false -o ./dist/index.d.ts ./style-spec.ts",
-    "build-spec": "rollup -c && rollup -c --environment esm",
-    "prepublishOnly": "npm run build",
-    "postpublish": "rm dist/index.cjs dist/index.d.ts"
-  },
-  "bin": {
-    "gl-style-migrate": "./bin/gl-style-migrate.js",
-    "gl-style-validate": "./bin/gl-style-validate.js",
-    "gl-style-format": "./bin/gl-style-format.js",
-    "gl-style-composite": "./bin/gl-style-composite.js"
-  },
-  "dependencies": {
-    "@mapbox/jsonlint-lines-primitives": "~2.0.2",
-    "@mapbox/point-geometry": "^0.1.0",
-    "@mapbox/unitbezier": "^0.0.1",
-    "cheap-ruler": "^4.0.0",
-    "csscolorparser": "~1.0.2",
-    "json-stringify-pretty-compact": "^4.0.0",
-    "minimist": "^1.2.6",
-    "quickselect": "^3.0.0",
-    "rw": "^1.3.3",
-    "tinyqueue": "^3.0.0"
-  }
-}
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8" />
+    <title>Mapbox添加坐标点示例</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    
+    <!-- 引入Mapbox GL JS的CSS和JS文件 -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+    
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .map-container {
+                height: 80vh;
+            }
+        }
+    </style></head><body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Mapbox地图坐标点示例</h1>
+        
+        <!-- 地图容器 -->
+        <div id="map" class="map-container rounded-lg shadow-xl border border-gray-300"></div>
+        
+        <div class="mt-6 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-3">关于本示例</h2>
+            <p class="text-gray-600 mb-2">此示例展示了如何在Mapbox地图上添加坐标点标记。</p>
+            <p class="text-gray-600">点击标记可以查看地点信息。</p>
+        </div>
+    </div>
+
+    <script>
+        // 设置你的Mapbox访问令牌
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZXhhbXBsZXVzZXIiLCJhIjoiY2xoYjB3M254MGVxNzNjbzQ1dGp0aWZ3MCJ9.YourAccessTokenHere';
+        
+        // 初始化地图，将中心点设置为你的坐标点中心附近
+        const map = new mapboxgl.Map({
+            container: 'map', // 容器ID
+            style: 'mapbox://styles/mapbox/streets-v11', // 地图样式
+            center: [115.3040, 36.4030], // 中心点调整为你的坐标点中间位置
+            zoom: 12 // 初始缩放级别
+        });
+        
+        // 地图加载完成后添加坐标点
+        map.on('load', () => {
+            // 定义要添加的坐标点数据（使用你提供的坐标）
+            const locations = [
+                {
+                    name: '坐标点 1',
+                    coordinates: [115.3063, 36.4179], // 注意：Mapbox使用[经度, 纬度]顺序
+                    description: '纬度: 36.4179<br>经度: 115.3063'
+                },
+                {
+                    name: '坐标点 2',
+                    coordinates: [115.3073, 36.4030],
+                    description: '纬度: 36.4030<br>经度: 115.3073'
+                },
+                {
+                    name: '坐标点 3',
+                    coordinates: [115.2915, 36.4014],
+                    description: '纬度: 36.4014<br>经度: 115.2915'
+                },
+                {
+                    name: '坐标点 4',
+                    coordinates: [115.2962, 36.3858],
+                    description: '纬度: 36.3858<br>经度: 115.2962'
+                }
+            ];
+            
+            // 为每个坐标点创建标记并添加到地图
+            locations.forEach((location, index) => {
+                // 创建自定义HTML标记元素
+                const el = document.createElement('div');
+                el.className = 'marker';
+                el.style.width = '36px';
+                el.style.height = '36px';
+                el.style.borderRadius = '50%';
+                el.style.backgroundColor = '#1E40AF';
+                el.style.display = 'flex';
+                el.style.alignItems = 'center';
+                el.style.justifyContent = 'center';
+                el.style.color = 'white';
+                el.style.fontWeight = 'bold';
+                el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+                el.style.cursor = 'pointer';
+                el.style.transition = 'transform 0.2s';
+                
+                // 添加悬停效果
+                el.addEventListener('mouseenter', () => {
+                    el.style.transform = 'scale(1.1)';
+                    el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+                });
+                
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = 'scale(1)';
+                    el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+                });
+                
+                // 设置标记内的文本（显示点的序号）
+                el.innerHTML = `<span>${index + 1}</span>`;
+                
+                // 创建Popup信息窗口
+                const popup = new mapboxgl.Popup({ offset: 25 })
+                    .setHTML(`
+                        <div class="p-2">
+                            <h3 class="font-bold text-gray-800">${location.name}</h3>
+                            <p class="text-sm text-gray-600">${location.description}</p>
+                        </div>
+                    `);
+                
+                // 将标记添加到地图
+                new mapboxgl.Marker(el)
+                    .setLngLat(location.coordinates)
+                    .setPopup(popup)
+                    .addTo(map);
+            });
+        });
+    </script></body></html>
